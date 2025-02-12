@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import ContextTypes
 from telegram.error import TelegramError
 from config.settings import NEWS_CHANNEL_ID, ADMIN_IDS
@@ -23,6 +23,13 @@ async def get_sub_keyboard():
         [InlineKeyboardButton("✅ Я подписался", callback_data="check_subscription")]
     ]
     return InlineKeyboardMarkup(keyboard)
+
+def get_main_keyboard():
+    keyboard = [
+        [KeyboardButton("🎬 Фильмы"), KeyboardButton("📖 Инструкция")],
+        [KeyboardButton("❓ Помощь"), KeyboardButton("👨‍💻 Поддержка")]
+    ]
+    return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -81,4 +88,4 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📝 Просто отправьте мне ID фильма, и я пришлю вам фильм вместе с описанием.\n\n"
         f"🔍 ID фильма можно найти в нашем канале {NEWS_CHANNEL_ID}"
     )
-    await update.message.reply_text(welcome_text)
+    await update.message.reply_text(welcome_text, reply_markup=get_main_keyboard())
