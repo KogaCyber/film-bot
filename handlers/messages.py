@@ -1,3 +1,4 @@
+import os
 from telegram import Update
 from telegram.ext import ContextTypes
 from config.settings import CHANNEL_ID, ADMIN_IDS
@@ -42,10 +43,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             await update.message.reply_text(error_text)
     except ValueError:
+        channel_link = os.getenv("NEWS_CHANNEL_NAME")
         if message_text.lower() != "kod":
             help_text = (
                 "❗️ Пожалуйста, отправьте только номер фильма (ID).\n\n"
-                "🔍 ID фильма можно найти в описании к фильму в нашем канале\n"
+                f"🔍 ID фильма можно найти в описании к фильму в нашем канале {channel_link}\n"
                 "📝 Пример: 123"
             )
             await update.message.reply_text(help_text)
