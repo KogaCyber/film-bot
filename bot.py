@@ -16,21 +16,25 @@ def signal_handler(sig, frame):
     logger.info("Получен сигнал завершения. Бот останавливается...")
     sys.exit(0)
 
-@rate_limit()
+@rate_limit('command')
 async def wrapped_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await start(update, context)
 
-@rate_limit()
+@rate_limit('message')
 async def wrapped_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await handle_message(update, context)
 
-@rate_limit()
+@rate_limit('command')
 async def wrapped_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await help_command(update, context)
 
-@rate_limit()
+@rate_limit('command')
 async def wrapped_support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await support_command(update, context)
+
+@rate_limit('callback')
+async def wrapped_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    return await subscription_callback(update, context)
 
 def main():
     # Добавляем обработчик сигнала
@@ -43,7 +47,7 @@ def main():
     application.add_handler(CommandHandler("start", wrapped_start))
     application.add_handler(CommandHandler("admin", admin_command))
     application.add_handler(CommandHandler("users", users_command))
-    application.add_handler(CallbackQueryHandler(subscription_callback, pattern="^check_subscription$"))
+    application.add_handler(CallbackQueryHandler(wrapped_subscription_callback, pattern="^check_subscription$"))
     application.add_handler(MessageHandler(
         (filters.UpdateType.CHANNEL_POST | filters.UpdateType.EDITED_CHANNEL_POST),
         handle_channel_post
