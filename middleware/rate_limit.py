@@ -10,12 +10,14 @@ class RateLimiter:
         self.last_request = defaultdict(lambda: datetime.min)
         self.COOLDOWN = 5  # секунд между сообщениями
         
-    def is_rate_limited(self, user_id: int) -> bool:
+    def is_rate_limited(self, user_id: str) -> bool:
         """Проверяет, прошло ли достаточно времени с последнего сообщения"""
         current_time = datetime.now()
-        time_passed = (current_time - self.last_request[user_id]).total_seconds()
+        last_time = self.last_request[user_id]
+        time_passed = (current_time - last_time).total_seconds()
         
         if time_passed < self.COOLDOWN:
+            logger.info(f"Rate limit для пользователя {user_id}. Прошло {time_passed:.1f} сек.")
             return True
             
         self.last_request[user_id] = current_time
@@ -28,10 +30,13 @@ def rate_limit():
     def decorator(func):
         @wraps(func)
         async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE, *args, **kwargs):
-            user_id = update.effective_user.id
+            if not update.effective_user:
+                return await func(update, context, *args, **kwargs)
+                
+            user_id = str(update.effective_user.id)
             
             if rate_limiter.is_rate_limited(user_id):
-                # Просто игнорируем сообщение
+                logger.debug(f"Сообщение от {user_id} проигнорировано (rate limit)")
                 return
                 
             return await func(update, context, *args, **kwargs)
