@@ -8,7 +8,7 @@ from handlers.admin import admin_command, users_command
 from handlers.user import start
 from handlers.channel import handle_channel_post
 from handlers.messages import handle_message
-from handlers.callbacks import subscription_callback, support_callback
+from handlers.callbacks import subscription_callback, support_callback, help_callback
 from handlers.help import help_command, support_command
 
 def signal_handler(sig, frame):
@@ -35,6 +35,7 @@ def main():
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("support", support_command))
     application.add_handler(CallbackQueryHandler(support_callback, pattern="^support$"))
+    application.add_handler(CallbackQueryHandler(help_callback, pattern="^back_to_help$"))
 
     logger.info("Бот запущен...")
     try:
