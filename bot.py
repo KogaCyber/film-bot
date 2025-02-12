@@ -9,6 +9,7 @@ from handlers.user import start
 from handlers.channel import handle_channel_post
 from handlers.messages import handle_message
 from handlers.callbacks import subscription_callback
+from handlers.help import help_command, support_command
 
 def signal_handler(sig, frame):
     logger.info("Получен сигнал завершения. Бот останавливается...")
@@ -31,6 +32,8 @@ def main():
         handle_channel_post
     ))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("support", support_command))
 
     logger.info("Бот запущен...")
     try:
