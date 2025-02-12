@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from config.settings import CHANNEL_ID
 from utils.logger import logger
+from database.film_ids import save_film_id
 
 async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.channel_post and not update.edited_channel_post:
@@ -12,6 +13,6 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
         
     message_id = post.message_id
-    # Сохраняем ID сообщения в bot_data
-    context.bot_data['last_message_id'] = message_id
+    # Сохраняем ID сообщения в JSON
+    save_film_id(message_id)
     logger.info(f"Новый пост в канале. ID: {message_id}")

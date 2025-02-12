@@ -4,6 +4,7 @@ from telegram.ext import ContextTypes
 from config.settings import CHANNEL_ID, ADMIN_IDS, NEWS_CHANNEL_ID
 from utils.logger import logger
 from handlers.help import help_command, support_command
+from database.film_ids import get_last_film_id, get_all_film_ids
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_text = update.message.text
@@ -52,11 +53,30 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Обработка команды kod для админов
     if message_text.lower() == "kod" and user_id in ADMIN_IDS:
-        last_id = context.bot_data.get('last_message_id', 'Нет данных')
-        await update.message.reply_text(
-            f"🎬 Последний ID: {last_id}\n"
-            f"📝 Следующий ID будет: {last_id + 1 if isinstance(last_id, int) else 'Нет данных'}"
-        )
+        last_film = get_last_film_id()
+        if last_film:
+            await update.message.reply_text(
+                f"🎬 Последний ID: {last_film['message_id']}\n"
+                f"⏰ Добавлен: {last_film['timestamp']}\n"
+                "💡 Используйте 'all' для просмотра всех ID"
+            )
+        else:
+            await update.message.reply_text("❌ Нет сохраненных ID фильмов")
+        return
+    
+    elif message_text.lower() == "all" and user_id in ADMIN_IDS:
+        all_films = get_all_film_ids()
+        if all_films:
+            films_text = "📋 Список всех ID фильмов:\n\n"
+            for film in all_films:
+                films_text += (
+                    f"🎬 ID: {film['message_id']}\n"
+                    f"⏰ Добавлен: {film['timestamp']}\n"
+                    "➖➖➖➖➖➖➖➖➖➖\n"
+                )
+            await update.message.reply_text(films_text)
+        else:
+            await update.message.reply_text("❌ Нет сохраненных ID фильмов")
         return
 
     # Обработка запроса фильма для пользователей

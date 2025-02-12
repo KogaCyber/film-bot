@@ -1,7 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import ContextTypes
 from telegram.error import TelegramError
-from config.settings import NEWS_CHANNEL_ID, ADMIN_IDS
+from config.settings import CHANNEL_ID, NEWS_CHANNEL_ID, ADMIN_IDS
 from database.users import save_user, load_users
 from utils.logger import logger
 
