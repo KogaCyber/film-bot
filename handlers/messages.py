@@ -10,7 +10,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Обработка команды kod для админов
     if message_text.lower() == "kod" and user_id in ADMIN_IDS:
-        await update.message.reply_text(f"🎬 Последний ID: {context.bot_data.get('last_message_id', 'Нет данных')}")
+        last_id = context.bot_data.get('last_message_id', 'Нет данных')
+        await update.message.reply_text(
+            f"🎬 Последний ID: {last_id}\n"
+            f"📝 Следующий ID будет: {last_id + 1 if isinstance(last_id, int) else 'Нет данных'}"
+        )
         return
 
     # Обработка запроса фильма для пользователей

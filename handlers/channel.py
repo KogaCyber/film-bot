@@ -12,4 +12,6 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
         
     message_id = post.message_id
+    # Сохраняем ID сообщения в bot_data
+    context.bot_data['last_message_id'] = message_id
     logger.info(f"Новый пост в канале. ID: {message_id}")
