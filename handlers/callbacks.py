@@ -2,6 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from config.settings import NEWS_CHANNEL_ID
 from handlers.user import check_subscription, get_sub_keyboard
+from handlers.help import support_command
 from utils.logger import logger
 
 async def subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -21,3 +22,8 @@ async def subscription_callback(update: Update, context: ContextTypes.DEFAULT_TY
             "🔔 Для использования бота необходимо подписаться на наш канал новостей!",
             reply_markup=await get_sub_keyboard()
         )
+
+async def support_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await support_command(update, context)
